@@ -32,12 +32,8 @@ func getTestParcel() Parcel {
 // TestAddGetDelete проверяет добавление, получение и удаление посылки
 func TestAddGetDelete(t *testing.T) {
 	// prepare
-	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		return
-	}
-	defer db.Close()
-	store := NewParcelStore(db)
+
+	store := NewParcelStore(s.db)
 	parcel := getTestParcel()
 
 	// add
@@ -71,11 +67,6 @@ func TestAddGetDelete(t *testing.T) {
 // TestSetAddress проверяет обновление адреса
 func TestSetAddress(t *testing.T) {
 	// prepare
-	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		return
-	}
-	defer db.Close()
 
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии
@@ -102,11 +93,6 @@ func TestSetAddress(t *testing.T) {
 // TestSetStatus проверяет обновление статуса
 func TestSetStatus(t *testing.T) {
 	// prepare
-	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		return
-	}
-	defer db.Close()
 
 	// add
 	// добавьте новую посылку в БД, убедитесь в отсутствии ошибки и наличии идентификатора
@@ -132,11 +118,6 @@ func TestSetStatus(t *testing.T) {
 // TestGetByClient проверяет получение посылок по идентификатору клиента
 func TestGetByClient(t *testing.T) {
 	// prepare
-	db, err := sql.Open("sqlite", "tracker.db") // настройте подключение к БД
-	if err != nil {
-		return
-	}
-	defer db.Close()
 
 	parcels := []Parcel{
 		getTestParcel(),
@@ -168,7 +149,7 @@ func TestGetByClient(t *testing.T) {
 	}
 
 	// get by client
-	storedParcels, err := db.Query("SELECT number FROM parcel WHERE client = :client",
+	storedParcels, err := s.db.Query("SELECT number FROM parcel WHERE client = :client",
 		sql.Named("client", client))
 	if err != nil {
 		return
@@ -203,6 +184,7 @@ func TestGetByClient(t *testing.T) {
 		// убедитесь, что все посылки из storedParcels есть в parcelMap
 		// убедитесь, что значения полей полученных посылок заполнены верно
 
-		assert.NotEmpty(t, parcelMap(parcel))
+		assert.NotEmpty(t, parcelMap(parcel.Number))
+		assert.Equal(t, parcelMap(parcel.Number), parcel.Number)
 	}
 }
