@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"math/rand"
 	"testing"
 	"time"
@@ -79,7 +78,7 @@ func TestSetAddress(t *testing.T) {
 	// set address
 	// обновите адрес, убедитесь в отсутствии ошибки
 	newAddress := "new test address"
-	err := SetAdress(idAddParc, newAddress)
+	err = SetAdress(idAddParc, newAddress)
 	require.NoError(t, err)
 
 	// check
@@ -149,24 +148,7 @@ func TestGetByClient(t *testing.T) {
 	}
 
 	// get by client
-	storedParcels, err := s.db.Query("SELECT number FROM parcel WHERE client = :client",
-		sql.Named("client", client))
-	if err != nil {
-		return
-	}
-	defer storedParcels.Close()
-	var Number []int
-
-	for storageParcels.Next() {
-		numb := 0
-		err := storedParcels.Scan(&numb)
-		if err != nill {
-			return
-		}
-		Number = append(Number, numb)
-		storageParcels = Number
-
-	}
+	storedParcels, err := GetByClient(client)
 
 	// получите список посылок по идентификатору клиента,
 	// сохранённого в переменной client
@@ -183,8 +165,8 @@ func TestGetByClient(t *testing.T) {
 		// значение - сама посылка
 		// убедитесь, что все посылки из storedParcels есть в parcelMap
 		// убедитесь, что значения полей полученных посылок заполнены верно
-
-		assert.NotEmpty(t, parcelMap(parcel.Number))
-		assert.Equal(t, parcelMap(parcel.Number), parcel.Number)
+		valMap, ok := parcelMap[parcel.Number]
+		assert.True(t, ok)
+		assert.Equal(t, valMap, parcel)
 	}
 }
